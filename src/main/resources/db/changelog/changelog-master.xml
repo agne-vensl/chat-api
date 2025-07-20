@@ -7,4 +7,5 @@
     
   <include file="db/changelog/001-create-users-table.xml"/>
   <include file="db/changelog/002-create-messages-table.xml"/>
+  <include file="db/changelog/003-insert-admin.xml"/>
 </databaseChangeLog>
