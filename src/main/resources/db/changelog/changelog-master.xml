@@ -6,4 +6,5 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd">
     
   <include file="db/changelog/001-create-users-table.xml"/>
+  <include file="db/changelog/002-create-messages-table.xml"/>
 </databaseChangeLog>
