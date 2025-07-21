@@ -1,0 +1,52 @@
+package com.project.chatapi.service;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
+import com.project.chatapi.dto.CreateUserRequest;
+import com.project.chatapi.dto.UserResponse;
+import com.project.chatapi.exception.UsernameAlreadyTakenException;
+import com.project.chatapi.model.User;
+import com.project.chatapi.model.enums.Role;
+import com.project.chatapi.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+
+@Service
+public class UserService {
+  UserRepository userRepository;
+
+  public UserService(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
+
+  public boolean isUsernameTaken(String username) {
+    Optional<User> user = userRepository.findActiveUserByUsername(username);
+
+    return user.isPresent() ? true : false;
+  }
+
+  @Transactional
+  public UserResponse createUser(CreateUserRequest request) {
+    Role role;
+    try {
+        role = Role.valueOf(request.role().toUpperCase());
+    } catch (IllegalArgumentException e) {
+        throw new IllegalArgumentException("Invalid role: " + request.role());
+    }
+
+    if (isUsernameTaken(request.username())) {
+      throw new UsernameAlreadyTakenException("Username '" + request.username() + "' is already taken");
+    }
+    
+    UUID publicId = UUID.randomUUID();
+    // todo: Hash password
+    String password = request.password();
+
+    userRepository.insertUser(publicId, request.username(), password, role.name(), false);
+
+    return new UserResponse(publicId, request.username(), role.name(), false);
+  }
+}
