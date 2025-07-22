@@ -7,6 +7,8 @@ import com.project.chatapi.dto.CreateUserRequest;
 import com.project.chatapi.dto.UserResponse;
 import com.project.chatapi.service.UserService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -21,7 +23,7 @@ public class UserController {
   }
 
   @PostMapping
-  public UserResponse createUser(@RequestBody CreateUserRequest request) {
+  public UserResponse createUser(@Valid @RequestBody CreateUserRequest request) {
     return userService.createUser(request);
   }
 }
