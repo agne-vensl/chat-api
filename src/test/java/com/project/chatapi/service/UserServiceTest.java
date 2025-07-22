@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.project.chatapi.dto.CreateUserRequest;
 import com.project.chatapi.dto.UserResponse;
+import com.project.chatapi.exception.UserNotFoundException;
 import com.project.chatapi.exception.UsernameAlreadyTakenException;
 import com.project.chatapi.model.User;
 import com.project.chatapi.model.enums.Role;
@@ -58,9 +62,9 @@ public class UserServiceTest {
 
   @Test
   void shouldThrowIfUsernameAlreadyTaken() {
-    String username = "tester";
+    String username = "tester3";
     String role = Role.USER.name();
-    CreateUserRequest request = new CreateUserRequest(username.toUpperCase(), "password", role);
+    CreateUserRequest request = new CreateUserRequest(username, "password", role);
 
     // First creation succeeds
     userService.createUser(request);
@@ -82,5 +86,32 @@ public class UserServiceTest {
       IllegalArgumentException.class, 
       () -> userService.createUser(request)
     );
+  }
+
+  @Test
+  void shouldFailToDeleteIfUserNotFound() {
+    UUID publicId = UUID.randomUUID();
+    
+    assertThrows(
+      UserNotFoundException.class, 
+      () -> userService.softDeleteByPublicId(publicId)
+    );
+  }
+
+  @Test
+  void shouldDeleteUser() {
+    String username = "tester4";
+    String role = Role.USER.name();
+    CreateUserRequest request = new CreateUserRequest(username, "password", role);
+
+    UserResponse response = userService.createUser(request);
+
+    userService.softDeleteByPublicId(response.publicId());
+
+    Optional<User> deletedUser = userRepository.findByPublicId(response.publicId());
+
+    assertTrue(deletedUser.isPresent());
+    assertTrue(deletedUser.get().isDeleted());
+    assertEquals("anonymous user", deletedUser.get().getUsername());
   }
 }

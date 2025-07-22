@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.project.chatapi.dto.CreateUserRequest;
 import com.project.chatapi.dto.UserResponse;
+import com.project.chatapi.exception.UserNotFoundException;
 import com.project.chatapi.exception.UsernameAlreadyTakenException;
 import com.project.chatapi.model.User;
 import com.project.chatapi.model.enums.Role;
@@ -31,6 +32,12 @@ public class UserService {
     return user.isPresent() ? true : false;
   }
 
+  public boolean userExists(UUID publicId) {
+    Optional<User> user = userRepository.findByPublicId(publicId);
+
+    return user.isPresent() ? true : false;
+  }
+
   @Transactional
   public UserResponse createUser(CreateUserRequest request) {
     Role role;
@@ -50,5 +57,14 @@ public class UserService {
     userRepository.insertUser(publicId, request.username(), hashedPassword, role.name(), false);
 
     return new UserResponse(publicId, request.username(), role.name(), false);
+  }
+
+  @Transactional
+  public void softDeleteByPublicId(UUID publicId) {
+    if(!userExists(publicId)) {
+      throw new UserNotFoundException("User with publicId '" + publicId + "' not found");
+    }
+
+    userRepository.softDeleteByPublicId(publicId);
   }
 }

@@ -13,6 +13,9 @@ import com.project.chatapi.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+  @Query(value = "SELECT * FROM users u WHERE public_id = :publicId", nativeQuery = true)
+  public Optional<User> findByPublicId(@Param("publicId") UUID publicId);
+
   @Query(value = "SELECT * FROM users u WHERE LOWER(u.username) = LOWER(:username) AND deleted = false",
     nativeQuery = true)
   public Optional<User> findActiveUserByUsername(@Param("username") String username);
@@ -28,4 +31,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Param("role") String role,
     @Param("deleted") boolean deleted
   );
+
+  @Modifying
+  @Query(value = "UPDATE users SET deleted = true, username = 'anonymous user' WHERE public_id = :publicId", 
+    nativeQuery = true)
+  public void softDeleteByPublicId(@Param("publicId") UUID publicId);
 }
