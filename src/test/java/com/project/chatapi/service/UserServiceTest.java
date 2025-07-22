@@ -1,14 +1,15 @@
 package com.project.chatapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.UUID;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.project.chatapi.dto.CreateUserRequest;
 import com.project.chatapi.dto.UserResponse;
@@ -17,7 +18,7 @@ import com.project.chatapi.model.User;
 import com.project.chatapi.model.enums.Role;
 import com.project.chatapi.repository.UserRepository;
 
-@DataJpaTest
+@SpringBootTest
 @Import(UserService.class)
 public class UserServiceTest {
   @Autowired
@@ -26,33 +27,14 @@ public class UserServiceTest {
   @Autowired
   private UserRepository userRepository;
 
-  private UUID testPublicId;
-  private String username;
-
-  void saveUser() {
-    User user = new User();
-    testPublicId = UUID.randomUUID();
-    user.setPublicId(testPublicId);
-    username = "tester";
-    user.setUsername(username);
-    user.setPassword("secret"); // Just a placeholder
-    user.setRole(Role.USER);
-    user.setDeleted(false);
-
-    userRepository.insertUser(
-      testPublicId, 
-      username, 
-      user.getPassword(), 
-      user.getRole().name(), 
-      false
-    );
-  }
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   @Test
   void shouldCreateUser() {
-    String username = "tester2";
+    String username = "tester";
     String role = Role.USER.name();
-    CreateUserRequest request = new CreateUserRequest(username, "password2", role);
+    CreateUserRequest request = new CreateUserRequest(username, "password", role);
 
     UserResponse response = userService.createUser(request);
 
@@ -61,12 +43,29 @@ public class UserServiceTest {
   }
 
   @Test
-  void shouldThrowIfUsernameAlreadyTaken() {
-    saveUser();
-
+  void shouldEncodePasswordWhenCreatingUser() {
+    String username = "tester2";
+    String password = "password";
     String role = Role.USER.name();
-    CreateUserRequest request = new CreateUserRequest(username.toUpperCase(), "password2", role);
+    CreateUserRequest request = new CreateUserRequest(username, password, role);
 
+    userService.createUser(request);
+
+    User saved = userRepository.findActiveUserByUsername("tester2").orElseThrow();
+    assertNotEquals(password, saved.getPassword());
+    assertTrue(passwordEncoder.matches(password, saved.getPassword()));
+  }
+
+  @Test
+  void shouldThrowIfUsernameAlreadyTaken() {
+    String username = "tester";
+    String role = Role.USER.name();
+    CreateUserRequest request = new CreateUserRequest(username.toUpperCase(), "password", role);
+
+    // First creation succeeds
+    userService.createUser(request);
+
+    // Second attempt fails
     assertThrows(
       UsernameAlreadyTakenException.class, 
       () -> userService.createUser(request)
@@ -75,9 +74,9 @@ public class UserServiceTest {
 
   @Test
   void shouldThrowIfRoleInvalid() {
-    String username = "tester2";
+    String username = "tester";
     String role = "RANDOM";
-    CreateUserRequest request = new CreateUserRequest(username, "password2", role);
+    CreateUserRequest request = new CreateUserRequest(username, "password", role);
 
     assertThrows(
       IllegalArgumentException.class, 

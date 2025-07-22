@@ -3,6 +3,7 @@ package com.project.chatapi.service;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.project.chatapi.dto.CreateUserRequest;
@@ -17,9 +18,11 @@ import jakarta.transaction.Transactional;
 @Service
 public class UserService {
   UserRepository userRepository;
+  PasswordEncoder passwordEncoder;
 
-  public UserService(UserRepository userRepository) {
+  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
   }
 
   public boolean isUsernameTaken(String username) {
@@ -42,10 +45,9 @@ public class UserService {
     }
     
     UUID publicId = UUID.randomUUID();
-    // todo: Hash password
-    String password = request.password();
+    String hashedPassword = passwordEncoder.encode(request.password());
 
-    userRepository.insertUser(publicId, request.username(), password, role.name(), false);
+    userRepository.insertUser(publicId, request.username(), hashedPassword, role.name(), false);
 
     return new UserResponse(publicId, request.username(), role.name(), false);
   }
