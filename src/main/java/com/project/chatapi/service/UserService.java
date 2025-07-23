@@ -26,6 +26,10 @@ public class UserService {
     this.passwordEncoder = passwordEncoder;
   }
 
+  public Optional<User> findActiveUserByPublicId(UUID publicId) {
+    return userRepository.findActiveUserByPublicId(publicId);
+  }
+
   public boolean isUsernameTaken(String username) {
     Optional<User> user = userRepository.findActiveUserByUsername(username);
 

@@ -1,0 +1,20 @@
+package com.project.chatapi.repository;
+
+import java.time.LocalDateTime;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import com.project.chatapi.model.Message;
+
+public interface MessageRepository extends JpaRepository<Message, Long> {
+  @Modifying
+  @Query(value = "INSERT INTO messages (user_id, content, created_at) VALUES (:userId, :content, :createdAt)", nativeQuery = true)
+  public void insertMessage(
+    @Param("userId") Long id,
+    @Param("content") String content,
+    @Param("createdAt") LocalDateTime createdAt
+  );
+}

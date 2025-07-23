@@ -70,8 +70,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
           return;
         }
 
-        var auth = new UsernamePasswordAuthenticationToken(
+        AuthenticatedUser authenticatedUser = new AuthenticatedUser(
+          UUID.fromString(publicId),
           username,
+          role
+        );
+
+        var auth = new UsernamePasswordAuthenticationToken(
+          authenticatedUser,
           null,
           List.of(new SimpleGrantedAuthority("ROLE_" + role))
         );
