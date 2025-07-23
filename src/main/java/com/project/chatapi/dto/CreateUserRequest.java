@@ -5,21 +5,28 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import static com.project.chatapi.constants.ErrorMessages.USERNAME_IS_REQUIRED;
+import static com.project.chatapi.constants.ErrorMessages.PASSWORD_IS_REQUIRED;
+import static com.project.chatapi.constants.ErrorMessages.ROLE_IS_REQUIRED;
+import static com.project.chatapi.constants.ErrorMessages.USERNAME_LENGTH_ERROR;
+import static com.project.chatapi.constants.ErrorMessages.ROLE_MUST_BE;
+import static com.project.chatapi.constants.ErrorMessages.USERNAME_CAN_ONLY_CONTAIN;
+
 public record CreateUserRequest(
-  @Size(min = 1, max = 255, message = "Username must be between 1 and 255 characters")
-  @NotBlank(message = "Username is a mandatory field")
-  @NotNull(message = "Username is a mandatory field")
+  @Size(min = 1, max = 255, message = USERNAME_LENGTH_ERROR)
+  @NotBlank(message = USERNAME_IS_REQUIRED)
+  @NotNull(message = USERNAME_IS_REQUIRED)
   @Pattern(
     regexp = "^[A-Za-z0-9_\\-!?~*]+$", 
-    message = "Username can only contain letters, nuumbers and _, -, ?, !, ~, *")
+    message = USERNAME_CAN_ONLY_CONTAIN)
   String username, 
 
-  @NotBlank(message = "Password is a mandatory field")
-  @NotNull(message = "Password is a mandatory field")
+  @NotBlank(message = PASSWORD_IS_REQUIRED)
+  @NotNull(message = PASSWORD_IS_REQUIRED)
   String password, 
 
-  @NotBlank(message = "Role is a mandatory field")
-  @NotNull(message = "Role is a mandatory field")
-  @Pattern(regexp = "ADMIN|USER", message = "Role must be USER or ADMIN")
+  @NotBlank(message = ROLE_IS_REQUIRED)
+  @NotNull(message = ROLE_IS_REQUIRED)
+  @Pattern(regexp = "ADMIN|USER", message = ROLE_MUST_BE)
   String role
 ) {}
