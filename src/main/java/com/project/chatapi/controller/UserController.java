@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,11 +29,13 @@ public class UserController {
     this.userService = userService;
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
   public UserResponse createUser(@Valid @RequestBody CreateUserRequest request) {
     return userService.createUser(request);
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping("/{publicId}")
   public ResponseEntity<Void> deleteUser(@PathVariable("publicId") UUID publicId) {
     userService.softDeleteByPublicId(publicId);

@@ -13,8 +13,8 @@ import com.project.chatapi.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-  @Query(value = "SELECT * FROM users u WHERE public_id = :publicId", nativeQuery = true)
-  public Optional<User> findByPublicId(@Param("publicId") UUID publicId);
+  @Query(value = "SELECT * FROM users u WHERE public_id = :publicId AND deleted = false", nativeQuery = true)
+  public Optional<User> findActiveUserByPublicId(@Param("publicId") UUID publicId);
 
   @Query(value = "SELECT * FROM users u WHERE LOWER(u.username) = LOWER(:username) AND deleted = false",
     nativeQuery = true)

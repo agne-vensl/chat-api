@@ -33,7 +33,7 @@ public class UserService {
   }
 
   public boolean userExists(UUID publicId) {
-    Optional<User> user = userRepository.findByPublicId(publicId);
+    Optional<User> user = userRepository.findActiveUserByPublicId(publicId);
 
     return user.isPresent() ? true : false;
   }

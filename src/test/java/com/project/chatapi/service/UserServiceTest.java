@@ -11,7 +11,6 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.project.chatapi.dto.CreateUserRequest;
@@ -23,7 +22,6 @@ import com.project.chatapi.model.enums.Role;
 import com.project.chatapi.repository.UserRepository;
 
 @SpringBootTest
-@Import(UserService.class)
 public class UserServiceTest {
   @Autowired
   private UserService userService;
@@ -108,7 +106,7 @@ public class UserServiceTest {
 
     userService.softDeleteByPublicId(response.publicId());
 
-    Optional<User> deletedUser = userRepository.findByPublicId(response.publicId());
+    Optional<User> deletedUser = userRepository.findActiveUserByPublicId(response.publicId());
 
     assertTrue(deletedUser.isPresent());
     assertTrue(deletedUser.get().isDeleted());
