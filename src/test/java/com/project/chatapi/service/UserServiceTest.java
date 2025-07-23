@@ -106,7 +106,7 @@ public class UserServiceTest {
 
     userService.softDeleteByPublicId(response.publicId());
 
-    Optional<User> deletedUser = userRepository.findActiveUserByPublicId(response.publicId());
+    Optional<User> deletedUser = userRepository.findByPublicId(response.publicId());
 
     assertTrue(deletedUser.isPresent());
     assertTrue(deletedUser.get().isDeleted());
