@@ -7,6 +7,7 @@ import com.project.chatapi.dto.CreateUserRequest;
 import com.project.chatapi.dto.UserResponse;
 import com.project.chatapi.service.UserService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 import java.util.UUID;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/users")
+@SecurityRequirement(name = "bearerAuth")
 public class UserController {
   private final UserService userService;
 

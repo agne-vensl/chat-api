@@ -32,6 +32,11 @@ public class SecurityConfig {
       .headers(headers -> headers.frameOptions(frame -> frame.disable())) // Needed to access H2 console UI
       .authorizeHttpRequests(auth -> auth
         .requestMatchers("/h2-console/**").permitAll()
+        .requestMatchers(
+          "/swagger-ui/**", 
+          "/v3/api-docs/**", 
+          "/v3/api-docs.yaml"
+        ).permitAll()
         .requestMatchers("/auth/**").permitAll()
         .anyRequest().authenticated()
       )

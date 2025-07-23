@@ -8,6 +8,7 @@ import com.project.chatapi.dto.PostMessageRequest;
 import com.project.chatapi.security.AuthenticatedUser;
 import com.project.chatapi.service.MessageService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/messages")
+@SecurityRequirement(name = "bearerAuth")
 public class MessageController {
   MessageService messageService;
 
