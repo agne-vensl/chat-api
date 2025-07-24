@@ -76,7 +76,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
           role
         );
 
-        var auth = new UsernamePasswordAuthenticationToken(
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
           authenticatedUser,
           null,
           List.of(new SimpleGrantedAuthority("ROLE_" + role))

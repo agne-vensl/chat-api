@@ -40,7 +40,7 @@ public interface StatisticsRepository extends JpaRepository<Message, Long> {
     JOIN users u ON m.user_id = u.id
     WHERE u.public_id = :publicId
     """, nativeQuery = true)
-  Long getAverageMessageLength(@Param("publicId") UUID publicId);
+  Double getAverageMessageLength(@Param("publicId") UUID publicId);
 
   @Query(value = """
     SELECT m.content

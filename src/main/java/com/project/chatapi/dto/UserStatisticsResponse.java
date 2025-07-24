@@ -13,6 +13,6 @@ public record UserStatisticsResponse(
   @Schema(example = "156") Long messageCount,
   LocalDateTime firstMessagePostedAt,
   LocalDateTime lastMessagePostedAt,
-  @Schema(example = "543") Long averageMessageLength,
+  @Schema(example = "543") Double averageMessageLength,
   @Schema(example = "Last message.") String lastMessageContent
 ) {}
