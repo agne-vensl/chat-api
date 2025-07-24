@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -26,5 +25,4 @@ public class AuthController {
   public LoginResponse login(@Valid @RequestBody LoginRequest request) {
     return authService.login(request.username(), request.password());
   }
-  
 }
