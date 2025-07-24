@@ -106,7 +106,7 @@ class AdminControllerTest {
     when(userRepository.findActiveUserByPublicId(user.getPublicId()))
       .thenReturn(Optional.of(user));
 
-    String userToken = jwtUtil.generateToken(user.getUsername(), "USER", user.getPublicId().toString());
+    String userToken = jwtUtil.generateToken(user.getUsername(), user.getRole().name(), user.getPublicId().toString());
 
     mockMvc.perform(get("/admin/statistics/{publicId}", testUserPublicId)
       .header("Authorization", "Bearer " + userToken))
