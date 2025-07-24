@@ -15,7 +15,9 @@ import com.project.chatapi.model.enums.Role;
 import com.project.chatapi.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class UserService {
   UserRepository userRepository;
@@ -46,18 +48,21 @@ public class UserService {
   public UserResponse createUser(CreateUserRequest request) {
     Role role;
     try {
-        role = Role.valueOf(request.role().toUpperCase());
+      role = Role.valueOf(request.role().toUpperCase());
     } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException("Invalid role: " + request.role());
+      log.warn("Attempt to create user with invalid role: {}", request.role());
+      throw new IllegalArgumentException("Invalid role: " + request.role());
     }
 
     if (isUsernameTaken(request.username())) {
+      log.warn("Attempt to create duplicate user: {}", request.username());
       throw new UsernameAlreadyTakenException("Username '" + request.username() + "' is already taken");
     }
     
     UUID publicId = UUID.randomUUID();
     String hashedPassword = passwordEncoder.encode(request.password());
 
+    log.info("Registering new user: {}", request.username());
     userRepository.insertUser(publicId, request.username(), hashedPassword, role.name(), false);
 
     return new UserResponse(publicId, request.username(), role.name(), false);
@@ -66,9 +71,11 @@ public class UserService {
   @Transactional
   public void softDeleteByPublicId(UUID publicId) {
     if(!userExists(publicId)) {
+      log.warn("Attempt to delete user that does not exist");
       throw new UserNotFoundException("User with publicId '" + publicId + "' not found");
     }
 
+    log.info("Deleting user with publicId: {}, reassigning messages to anonymous", publicId);
     userRepository.softDeleteByPublicId(publicId);
   }
 }

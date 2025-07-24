@@ -9,6 +9,7 @@ import com.project.chatapi.service.UserService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
 
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/users")
 @SecurityRequirement(name = "bearerAuth")
@@ -34,12 +35,14 @@ public class UserController {
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
   public UserResponse createUser(@Valid @RequestBody CreateUserRequest request) {
+    log.info("Admin creating new user: {}", request.username());
     return userService.createUser(request);
   }
 
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping("/{publicId}")
   public ResponseEntity<Void> deleteUser(@PathVariable("publicId") UUID publicId) {
+    log.info("Admin deleting user with publicId: {}", publicId);
     userService.softDeleteByPublicId(publicId);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }

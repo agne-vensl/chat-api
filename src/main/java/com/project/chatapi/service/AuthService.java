@@ -9,6 +9,9 @@ import com.project.chatapi.model.User;
 import com.project.chatapi.repository.UserRepository;
 import com.project.chatapi.security.JwtUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class AuthService {
   private UserRepository userRepository;
@@ -27,12 +30,17 @@ public class AuthService {
 
   public LoginResponse login(String username, String password) {
     User user = userRepository.findActiveUserByUsername(username)
-      .orElseThrow(() -> new InvalidCredentialsException());
+      .orElseThrow(() -> {
+        log.warn("Failed login for user: {}", username);
+        return new InvalidCredentialsException();
+      });
 
     if (!passwordEncoder.matches(password, user.getPassword())) {
+      log.warn("Failed login for user: {}", username);
       throw new InvalidCredentialsException();
     }
 
+    log.debug("Generated JWT for user: {}", username);
     String token = jwtUtil.generateToken(
       user.getUsername(),
       user.getRole().name(),
