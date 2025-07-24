@@ -80,6 +80,7 @@ The full API is documented in Swagger, but key routes include:
 
 ## Known Limitations & Planned Improvements
 
+- **Logging:** Add more logging.
 - **Validation:** Role validation in DTOs is currently hardcoded; should be dynamic.
 - **Configuration:** Separate Spring profile for tests (with its own JWT secret) would improve test isolation.
 - **Testing:**
