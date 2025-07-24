@@ -47,13 +47,15 @@ All users communicate in a single shared channel, with role-based functionality 
 ### Setup
 
 1. Clone the repository.
-2. Run with Gradle:
+2. Rename `app.env.example` file to `app.env`
+3. set JWT_SECRET in `app.env` file
+4. Run with Gradle:
 
 ```
 ./gradlew bootRun
 ```
 
-3. Open Swagger UI: http://localhost:8080/swagger-ui.html
+5. Open Swagger UI: http://localhost:8080/swagger-ui.html
 
 ### API Endpoints
 
