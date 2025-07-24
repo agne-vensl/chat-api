@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
   @ExceptionHandler(UsernameAlreadyTakenException.class)
@@ -69,6 +72,16 @@ public class GlobalExceptionHandler {
       .body(Map.of(
         "error", "Invalid Parameter",
         "message", "Invalid value for parameter '" + ex.getName() + "': " + ex.getValue()
+    ));
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<Map<String, String>> handleUnhandledException(Exception ex) {
+    log.error("Unhandled exception occurred", ex);
+
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+      "error", "Internal Server Error",
+      "message", ex.getMessage()
     ));
   }
 }
